@@ -8,3 +8,4 @@ The course material can be found [here](https://courses.mooc.fi/org/uh-cs/course
 ### Chapter 2 
 
 - #### [1.1.](https://github.com/ebrhoden/devops-with-kubernetes/tree/1.1/log_output)
+- #### [1.2.](https://github.com/ebrhoden/devops-with-kubernetes/tree/1.2/the_project)
