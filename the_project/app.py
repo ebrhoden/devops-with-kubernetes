@@ -1,19 +1,17 @@
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 import os
-from http.server import BaseHTTPRequestHandler, HTTPServer
 
-PORT = int(os.getenv("PORT", "8080"))
+app = FastAPI()
 
-class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/plain")
-        self.end_headers()
-        self.wfile.write(b"Todo app")
+MESSAGE = os.getenv("MESSAGE", "Hello Kubernetes!")
 
-    def log_message(self, format, *args):
-        pass
-
-print(f"Server started in port {PORT}", flush=True)
-
-server = HTTPServer(("0.0.0.0", PORT), Handler)
-server.serve_forever()
+@app.get("/", response_class=HTMLResponse)
+def root():
+    return f"""
+    <html>
+        <body>
+            <h1>{MESSAGE}</h1>
+        </body>
+    </html>
+    """

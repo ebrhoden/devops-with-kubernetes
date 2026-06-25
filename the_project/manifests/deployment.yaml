@@ -14,4 +14,7 @@ spec:
     spec:
       containers:
         - name: todoapp
-          image: ebrhoden/todo_app:0.0.1
+          image: ebrhoden/todo_app:0.0.2
+          env:
+            - name: MESSAGE
+              value: "This is a message from the environment variable"
