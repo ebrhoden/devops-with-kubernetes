@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
         - name: hashgenerator
-          image: ebrhoden/log_output:0.0.2
+          image: ebrhoden/log_output:0.0.3

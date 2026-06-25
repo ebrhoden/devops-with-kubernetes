@@ -1,13 +1,22 @@
 import uuid
-import time
 from datetime import datetime, timezone
 
-# Generate random string on startup and store in memory
+from fastapi import FastAPI
+
+app = FastAPI()
+
+# Generate random string once on startup
 random_string = str(uuid.uuid4())
 
-# Output the string every 5 seconds with timestamp
-while True:
-    timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.') + \
-                f'{datetime.now(timezone.utc).microsecond // 1000:03d}Z'
-    print(f'{timestamp}: {random_string}', flush=True)
-    time.sleep(5)
+
+def current_timestamp() -> str:
+    now = datetime.now(timezone.utc)
+    return now.strftime("%Y-%m-%dT%H:%M:%S.") + f"{now.microsecond // 1000:03d}Z"
+
+
+@app.get("/status")
+async def status():
+    return {
+        "timestamp": current_timestamp(),
+        "random_string": random_string,
+    }
