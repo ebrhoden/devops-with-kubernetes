@@ -16,3 +16,4 @@ The course material can be found [here](https://courses.mooc.fi/org/uh-cs/course
 - [1.7.](https://github.com/ebrhoden/devops-with-kubernetes/tree/1.7/log_output)
 - [1.8.](https://github.com/ebrhoden/devops-with-kubernetes/tree/1.8/the_project)
 - [1.9.](https://github.com/ebrhoden/devops-with-kubernetes/tree/1.9/apps)
+- [1.10.](https://github.com/ebrhoden/devops-with-kubernetes/tree/1.10/apps)
