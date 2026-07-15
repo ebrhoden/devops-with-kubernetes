@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: log-dep
+  name: pingpong-dep
 
 spec:
   replicas: 1
 
   selector:
     matchLabels:
-      app: log
+      app: pingpong
 
   template:
     metadata:
       labels:
-        app: log
+        app: pingpong
 
     spec:
       volumes:
@@ -22,15 +22,8 @@ spec:
             claimName: shared-pvc
 
       containers:
-        - name: log-writer
-          image: ebrhoden/log-writter:0.0.2
-
-          volumeMounts:
-            - name: shared-storage
-              mountPath: /shared
-
-        - name: log-reader
-          image: ebrhoden/log-reader:0.0.2
+        - name: pingpong
+          image: ebrhoden/pingpong_app:0.0.2
 
           ports:
             - containerPort: 8080
