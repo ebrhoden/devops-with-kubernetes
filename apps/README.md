@@ -15,4 +15,4 @@ kubectl apply -f manifests
 
 ## Checks
 
-To check the behavior, access ```localhost:8081/status``` and ```localhost:8081/pingpong```
+To check the behavior, access ```localhost:8081/status```

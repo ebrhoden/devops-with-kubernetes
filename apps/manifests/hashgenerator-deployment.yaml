@@ -1,17 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hashgenerator-dep
+  name: log-dep
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hashgenerator
+      app: log
   template:
     metadata:
       labels:
-        app: hashgenerator
+        app: log
     spec:
+      volumes:
+        - name: shared-data
+          emptyDir: {}
       containers:
-        - name: hashgenerator
-          image: ebrhoden/log_output:0.0.3
+        - name: log-writter
+          image: ebrhoden/log-writter:0.0.1
+          volumeMounts:
+            - name: shared-data
+              mountPath: /shared
+        - name: log-reader
+          image: ebrhoden/log-reader:0.0.1
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: shared-data
+              mountPath: /shared
