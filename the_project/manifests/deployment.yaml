@@ -14,7 +14,16 @@ spec:
     spec:
       containers:
         - name: todoapp
-          image: ebrhoden/todo_app:0.0.2
+          image: ebrhoden/todo_app:0.0.3
           env:
             - name: MESSAGE
-              value: "This is a message from the environment variable"
+              value: "This is a message from the environment variable. An image should be displayed below."
+            - name: CACHE_SECONDS
+              value: "20"
+          volumeMounts:
+            - name: image-storage
+              mountPath: /data
+      volumes:
+        - name: image-storage
+          persistentVolumeClaim:
+            claimName: todoapp-pvc

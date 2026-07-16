@@ -2,23 +2,81 @@
 
 ## Source Code
 
-The `Dockerfile` and `app.py` files are the source code for the Docker image `ebrhoden/todo_app:0.0.2`.
+The `Dockerfile` and `app.py` files are the source code for the Docker image `ebrhoden/todo_app:0.0.3`.
 
-## Creating the cluster with open ports on server node and agent node
+## Testing the Image Cache
 
-To create a cluster granting access to server node on port 8081 and to one of the agent nodes on port 8082, run the following command:
+The application downloads a random image from Lorem Picsum and caches it in a PersistentVolume. The cached image is reused until it expires (10 minutes in production, or the value configured by the `CACHE_SECONDS` environment variable).
+
+For development, `CACHE_SECONDS` is set to `20` seconds to make testing easier.
+
+## Deploy the application
+
+Apply the Kubernetes storage manifests:
 ```bash
-k3d cluster create --port 8082:30000@agent:0 -p 8081:80@loadbalancer --agents 2
+kubectl apply -f storage/
 ```
 
-## Deployment to Kubernetes
-
-To deploy this image to Kubernetes and acess it from outside the cluster, run the following command:
+Apply the Kubernetes manifests:
 
 ```bash
-kubectl apply -f manifests
+kubectl apply -f manifests/
 ```
 
-## Checks
+Verify that the pod is running:
 
-To check the behavior, access ```localhost:8081``` and check the greeting message.
+```bash
+kubectl get pods
+```
+
+## Access the application
+
+Port-forward the Service:
+
+```bash
+kubectl port-forward svc/todoapp-svc 8000:2345
+```
+
+Then open:
+
+```
+http://localhost:8000/
+```
+
+## Verify image caching
+
+1. Open the application. A random image should be displayed.
+2. Refresh the page several times within 20 seconds. The same image should be displayed each time.
+3. Wait more than 20 seconds.
+4. Refresh the page again. A new random image should now be downloaded and displayed.
+
+## Verify persistence
+
+To verify that the image is stored in the PersistentVolume:
+
+1. Load the application once so the image is downloaded.
+2. Delete the running pod:
+
+```bash
+kubectl delete pod -l app=todoapp
+```
+
+3. Wait for Kubernetes to create a replacement pod:
+
+```bash
+kubectl get pods
+```
+
+4. Refresh the application before the cache expires.
+
+The same image should still be displayed, demonstrating that the cached image was restored from the PersistentVolume rather than downloaded again.
+
+## Verify the cached files
+
+To inspect the cached files inside the container:
+
+```bash
+kubectl exec -it deploy/todoapp-dep -- ls -l /data
+```
+
+The cache directory should contain the downloaded image (and any metadata file if your implementation uses one).
