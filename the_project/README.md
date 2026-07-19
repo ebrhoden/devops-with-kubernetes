@@ -2,7 +2,9 @@
 
 ## Source Code
 
-The `Dockerfile` and `app.py` files are the source code for the Docker image `ebrhoden/todo_app:0.0.3`.
+The `Dockerfile` and `app.py` files are the source code for the Docker image `ebrhoden/todo_app:0.0.4`.
+
+The rendered page shows a cached image, 3 hardcoded TODOs, an input field and a button. Both the input field and the button are not fully functional yet.
 
 ## Testing the Image Cache
 
