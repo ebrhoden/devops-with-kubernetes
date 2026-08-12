@@ -1,9 +1,13 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
+
 import os
 from pathlib import Path
 from datetime import datetime, timedelta
+from urllib.parse import parse_qs
+
 import requests
+
 
 IMAGE = Path("/data/image.jpg")
 STAMP = Path("/data/timestamp.txt")
@@ -13,13 +17,13 @@ CACHE_TIME = timedelta(seconds=CACHE_SECONDS)
 
 MESSAGE = os.getenv("MESSAGE", "Hello Kubernetes!")
 
-app = FastAPI()
+BACKEND_URL = os.getenv(
+    "BACKEND_URL",
+    "http://todo-backend:8000"
+)
 
-HARDCODED_TODOS = [
-    "Buy groceries",
-    "Finish Kubernetes exercise",
-    "Read FastAPI documentation",
-]
+
+app = FastAPI()
 
 
 def image_is_fresh():
@@ -33,10 +37,18 @@ def image_is_fresh():
 
 def download_image():
     r = requests.get("https://picsum.photos/1200")
+    r.raise_for_status()
 
     IMAGE.write_bytes(r.content)
 
     STAMP.write_text(datetime.utcnow().isoformat())
+
+
+def get_todos():
+    response = requests.get(f"{BACKEND_URL}/todos")
+    response.raise_for_status()
+
+    return response.json()
 
 
 @app.get("/image")
@@ -47,30 +59,56 @@ def image():
     return FileResponse(IMAGE)
 
 
+@app.post("/todos")
+async def create_todo(request: Request):
+    body = await request.body()
+
+    form = parse_qs(body.decode())
+
+    todo_text = form.get("todo", [""])[0].strip()
+
+    if todo_text:
+        response = requests.post(
+            f"{BACKEND_URL}/todos",
+            json={"text": todo_text},
+        )
+
+        response.raise_for_status()
+
+    return RedirectResponse("/", status_code=303)
+
+
 @app.get("/", response_class=HTMLResponse)
 def root():
+
+    todos = get_todos()
+
     todo_items = "\n".join(
-        f"<li>{todo}</li>" for todo in HARDCODED_TODOS
+        f"<li>{todo['text']}</li>"
+        for todo in todos
     )
 
     return f"""
     <html>
         <body>
+
             <h1>{MESSAGE}</h1>
 
             <img src="/image" width="600">
 
             <h2>Add Todo</h2>
 
-            <form>
+            <form method="POST" action="/todos">
                 <input
                     type="text"
                     id="todo"
                     name="todo"
                     maxlength="140"
                     placeholder="Enter a todo (max 140 characters)"
+                    required
                 >
-                <button type="button">Send</button>
+
+                <button type="submit">Send</button>
             </form>
 
             <h2>Todos</h2>
@@ -78,6 +116,7 @@ def root():
             <ul>
                 {todo_items}
             </ul>
+
         </body>
     </html>
     """

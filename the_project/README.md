@@ -1,84 +1,85 @@
 # Todo App
 
-## Source Code
+## Overview
 
-The `Dockerfile` and `app.py` files are the source code for the Docker image `ebrhoden/todo_app:0.0.4`.
+This project consists of two FastAPI applications:
 
-The rendered page shows a cached image, 3 hardcoded TODOs, an input field and a button. Both the input field and the button are not fully functional yet.
+* **Todo App** serves the HTML interface, handles random image downloading and caching, and communicates with the Todo Backend.
+* **Todo Backend** provides the API for creating and retrieving todos. Todos are currently stored in memory.
 
-## Testing the Image Cache
+The applications communicate over HTTP using Kubernetes Services.
 
-The application downloads a random image from Lorem Picsum and caches it in a PersistentVolume. The cached image is reused until it expires (10 minutes in production, or the value configured by the `CACHE_SECONDS` environment variable).
+For more details about each application, see:
 
-For development, `CACHE_SECONDS` is set to `20` seconds to make testing easier.
+* [`todo-app/README.md`](todo-app/README.md)
+* [`todo-backend/README.md`](todo-backend/README.md)
 
 ## Deploy the application
 
-Apply the Kubernetes storage manifests:
-```bash
-kubectl apply -f storage/
-```
-
-Apply the Kubernetes manifests:
+Apply all Kubernetes manifests:
 
 ```bash
 kubectl apply -f manifests/
 ```
 
-Verify that the pod is running:
+Apply the storage (need for Todo App):
+```bash
+kubectl apply -f storage/
+```
+
+Verify that the Pods are running:
 
 ```bash
 kubectl get pods
 ```
 
-## Access the application
-
-Port-forward the Service:
+Verify the Services:
 
 ```bash
-kubectl port-forward svc/todoapp-svc 8000:2345
+kubectl get svc
 ```
 
-Then open:
-
-```
-http://localhost:8000/
-```
-
-## Verify image caching
-
-1. Open the application. A random image should be displayed.
-2. Refresh the page several times within 20 seconds. The same image should be displayed each time.
-3. Wait more than 20 seconds.
-4. Refresh the page again. A new random image should now be downloaded and displayed.
-
-## Verify persistence
-
-To verify that the image is stored in the PersistentVolume:
-
-1. Load the application once so the image is downloaded.
-2. Delete the running pod:
+Verify the Ingress:
 
 ```bash
-kubectl delete pod -l app=todoapp
+kubectl get ingress
 ```
 
-3. Wait for Kubernetes to create a replacement pod:
+## Test the application
+
+If using the provided Ingress, open:
+
+```text
+http://localhost:8081/
+```
+
+The page should display the Todo App with the configured message, a random image, and the current todo items.
+
+### Create a todo
+
+Enter a new todo in the form and click **Send**.
+
+The new todo should appear in the list after the page reloads.
+
+### Verify the backend
+
+You can also test the Todo Backend directly from inside the Todo App Pod:
 
 ```bash
-kubectl get pods
+kubectl exec -it deploy/todoapp-dep -- \
+  wget -qO- http://todo-backend:8000/todos
 ```
 
-4. Refresh the application before the cache expires.
+The command should return the current list of todos.
 
-The same image should still be displayed, demonstrating that the cached image was restored from the PersistentVolume rather than downloaded again.
+### Verify the complete flow
 
-## Verify the cached files
+To test the communication between the applications:
 
-To inspect the cached files inside the container:
+1. Open `http://localhost:8081/`.
+2. Confirm that the existing todos are displayed.
+3. Create a new todo using the form.
+4. Confirm that the new todo appears in the browser.
+5. Run the command above to verify that the Todo Backend contains the new todo.
 
-```bash
-kubectl exec -it deploy/todoapp-dep -- ls -l /data
-```
-
-The cache directory should contain the downloaded image (and any metadata file if your implementation uses one).
+The Todo App is exposed through the Ingress, while the Todo Backend is accessed internally through its Kubernetes Service.

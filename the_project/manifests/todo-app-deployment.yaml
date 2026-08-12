@@ -14,12 +14,14 @@ spec:
     spec:
       containers:
         - name: todoapp
-          image: ebrhoden/todo_app:0.0.4
+          image: ebrhoden/todo_app:0.0.5
           env:
             - name: MESSAGE
               value: "This is a message from the environment variable. An image should be displayed below."
             - name: CACHE_SECONDS
               value: "20"
+            - name: BACKEND_URL
+              value: "http://todo-backend:8000"
           volumeMounts:
             - name: image-storage
               mountPath: /data
