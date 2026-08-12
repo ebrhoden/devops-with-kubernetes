@@ -11,14 +11,15 @@ def get_counter():
         COUNTER_FILE.write_text("0")
     return int(COUNTER_FILE.read_text())
 
-
 def set_counter(value):
     COUNTER_FILE.write_text(str(value))
-
 
 @app.get("/pingpong", response_class=PlainTextResponse)
 async def pingpong():
     counter = get_counter()
-    response = f"pong {counter}"
     set_counter(counter + 1)
-    return response
+    return f"pong {counter}"
+
+@app.get("/pings", response_class=PlainTextResponse)
+async def pings():
+    return str(get_counter())

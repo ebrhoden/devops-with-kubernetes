@@ -23,7 +23,7 @@ spec:
 
       containers:
         - name: pingpong
-          image: ebrhoden/pingpong_app:0.0.2
+          image: ebrhoden/pingpong_app:0.0.3
 
           ports:
             - containerPort: 8080

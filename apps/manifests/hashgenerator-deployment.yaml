@@ -30,7 +30,7 @@ spec:
               mountPath: /shared
 
         - name: log-reader
-          image: ebrhoden/log-reader:0.0.2
+          image: ebrhoden/log-reader:0.0.3
 
           ports:
             - containerPort: 8080
