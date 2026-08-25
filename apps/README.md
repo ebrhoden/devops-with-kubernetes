@@ -37,7 +37,7 @@ The Log Reader retrieves the pong count over HTTP using the Kubernetes Service `
 
 ## Deploy the application
 
-Apply the Kubernetes storage manifests (if using a PersistentVolume for the log files and counter):
+Apply the Kubernetes storage manifests (if using a PersistentVolume for the log files and counter) to the `exercises` namespace:
 
 ```bash
 kubectl apply -f storage/
