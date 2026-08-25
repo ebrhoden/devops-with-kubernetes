@@ -16,7 +16,7 @@ For more details about each application, see:
 
 ## Deploy the application
 
-Apply all Kubernetes manifests:
+Apply all Kubernetes manifests to deploy to the `project` namespace:
 
 ```bash
 kubectl apply -f manifests/
