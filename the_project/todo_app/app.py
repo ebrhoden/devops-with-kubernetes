@@ -8,23 +8,20 @@ from urllib.parse import parse_qs
 
 import requests
 
+DATA_DIR = Path(os.getenv("DATA_DIR"))
 
-IMAGE = Path("/data/image.jpg")
-STAMP = Path("/data/timestamp.txt")
+IMAGE = DATA_DIR / "image.jpg"
+STAMP = DATA_DIR / "timestamp.txt"
 
-CACHE_SECONDS = int(os.getenv("CACHE_SECONDS", "600"))
+CACHE_SECONDS = int(os.getenv("CACHE_SECONDS"))
 CACHE_TIME = timedelta(seconds=CACHE_SECONDS)
 
-MESSAGE = os.getenv("MESSAGE", "Hello Kubernetes!")
+MESSAGE = os.getenv("MESSAGE")
 
-BACKEND_URL = os.getenv(
-    "BACKEND_URL",
-    "http://todo-backend:8000"
-)
-
+BACKEND_URL = os.getenv("BACKEND_URL")
+IMAGE_URL = os.getenv("IMAGE_URL")
 
 app = FastAPI()
-
 
 def image_is_fresh():
     if not IMAGE.exists() or not STAMP.exists():
@@ -36,7 +33,7 @@ def image_is_fresh():
 
 
 def download_image():
-    r = requests.get("https://picsum.photos/1200")
+    r = requests.get(IMAGE_URL)
     r.raise_for_status()
 
     IMAGE.write_bytes(r.content)

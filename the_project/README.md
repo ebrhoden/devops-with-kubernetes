@@ -55,6 +55,17 @@ http://localhost:8081/
 
 The page should display the Todo App with the configured message, a random image, and the current todo items.
 
+In case port 8081 in your local machine is already in use, you can port-forward to another port, like this:
+
+```text
+kubectl -n project port-forward service/todoapp-svc {DESIRED_PORT}:2345
+```
+
+And then visit:
+```text
+http://localhost:{DESIRED_PORT}/
+```
+
 ### Create a todo
 
 Enter a new todo in the form and click **Send**.
@@ -76,7 +87,7 @@ The command should return the current list of todos.
 
 To test the communication between the applications:
 
-1. Open `http://localhost:8081/`.
+1. Open `http://localhost:8081/` or `http://localhost:{DESIRED_PORT}/`.
 2. Confirm that the existing todos are displayed.
 3. Create a new todo using the form.
 4. Confirm that the new todo appears in the browser.

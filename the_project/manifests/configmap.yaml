@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todoapp-config
+  namespace: project
+data:
+  MESSAGE: "This is a message from ConfigMap. An image should be displayed below."
+  CACHE_SECONDS: "20"
+  BACKEND_URL: "http://todo-backend:8000"
+  IMAGE_URL: "https://picsum.photos/1200"
+  DATA_DIR: "/data"

@@ -5,27 +5,29 @@ metadata:
   namespace: project
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: todoapp
+
   template:
     metadata:
       labels:
         app: todoapp
+
     spec:
       containers:
         - name: todoapp
-          image: ebrhoden/todo_app:0.0.5
-          env:
-            - name: MESSAGE
-              value: "This is a message from the environment variable. An image should be displayed below."
-            - name: CACHE_SECONDS
-              value: "20"
-            - name: BACKEND_URL
-              value: "http://todo-backend:8000"
+          image: ebrhoden/todo_app:0.0.6
+
+          envFrom:
+            - configMapRef:
+                name: todoapp-config
+
           volumeMounts:
             - name: image-storage
               mountPath: /data
+
       volumes:
         - name: image-storage
           persistentVolumeClaim:
