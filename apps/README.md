@@ -13,7 +13,7 @@ This project consists of two FastAPI applications:
 The applications are packaged as the following Docker images:
 
 - `ebrhoden/log-writter:0.0.2`
-- `ebrhoden/log-reader:0.0.3`
+- `ebrhoden/log-reader:0.0.4`
 - `ebrhoden/pingpong_app:0.0.3`
 
 ## Application Architecture

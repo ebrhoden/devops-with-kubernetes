@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
 from pathlib import Path
@@ -6,6 +8,7 @@ import httpx
 app = FastAPI()
 
 LOG_FILE = Path("/shared/log.txt")
+INFORMATION_FILE = Path("/config/information.txt")
 
 PINGPONG_URL = "http://pingpong-svc:2345/pings"
 
@@ -13,6 +16,8 @@ PINGPONG_URL = "http://pingpong-svc:2345/pings"
 async def status():
 
     log = LOG_FILE.read_text() if LOG_FILE.exists() else ""
+    information = INFORMATION_FILE.read_text() if INFORMATION_FILE.exists() else ""
+    message = os.getenv("MESSAGE", "")
 
     try:
         async with httpx.AsyncClient() as client:
@@ -22,5 +27,10 @@ async def status():
         counter = "0"
 
     return PlainTextResponse(
-        f"{log}\nPing / Pongs: {counter}"
+        f"""
+        {log}\n
+        file content: {information}\n
+        env variable: MESSAGE={message}\n
+        Ping / Pongs: {counter}
+        """
     )
